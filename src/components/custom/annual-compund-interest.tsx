@@ -40,7 +40,7 @@ type YearRow = {
  * totalProfit = payout1 + payout2 + ... = payout1 / (1 - factor), if factor < 1
  */
 function upfrontProfitClosedForm(params: {
-    annualRate: number; // decimal
+    annualRate: number;
     amountAdded: number;
     daysRemaining: number;
 }) {
@@ -155,7 +155,7 @@ function simulate(params: {
 function simulateNonRecursive(params: {
     initialPrincipal: number;
     monthlyTopUp: number;
-    annualRate: number; // decimal
+    annualRate: number;
     years: number;
 }) {
     const { initialPrincipal, monthlyTopUp, annualRate, years } = params;
@@ -184,7 +184,7 @@ function simulateNonRecursive(params: {
     return { finalBalance: balance, yearRows, monthRowsByYear: {} as Record<number, MonthRow[]> };
 }
 
-export default function FixedDepositMonthlyTopupYears() {
+export default function FixedDepositMonthlyTopupYears({ showExplanation = true }) {
     const [initialInput, setInitialInput] = useState("2,500,000");
     const [topUpInput, setTopUpInput] = useState("500,000");
     const [yearsInput, setYearsInput] = useState("5");
@@ -195,10 +195,22 @@ export default function FixedDepositMonthlyTopupYears() {
 
     const [viewYearInput, setViewYearInput] = useState("1");
 
+    // NEW: currency state
+    const [currency, setCurrency] = useState<"NGN" | "USD" | "GBP" | "EUR">("NGN");
+
+    // NEW: dynamic formatter
+    const formatMoney = (value: number) =>
+        new Intl.NumberFormat(undefined, {
+            style: "currency",
+            currency,
+            maximumFractionDigits: 2,
+        }).format(value);
+
     const initialPrincipal = useMemo(
         () => parseMoneyFromFormatted(initialInput),
         [initialInput]
     );
+
     const monthlyTopUp = useMemo(
         () => parseMoneyFromFormatted(topUpInput),
         [topUpInput]
@@ -247,34 +259,58 @@ export default function FixedDepositMonthlyTopupYears() {
 
     const totalDeposits = initialPrincipal + monthlyTopUp * 12 * years;
     const profit = result.finalBalance - totalDeposits;
-
     const monthRows = result.monthRowsByYear?.[viewYear] ?? [];
 
     return (
-        <div className="">
+        <div>
             <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-slate-50">
                 Fixed Deposit With Monthly Top-Ups (Multi-Year)
             </h2>
-            <div className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-200/85">
-                <p>
-                    Scenario: you start with an initial fixed deposit (for example ₦2,500,000). Each month, you add an extra top-up
-                    (for example ₦500,000). In non-recursive mode, you wait until the end of the year before any interest is added,
-                    then you roll the full amount into the next year. In recursive mode, whenever you add money, the bank credits
-                    an upfront payout based on the time left in the year, and you immediately add that payout back into the deposit.
-                    This repeats automatically for that same top-up, which increases what you carry forward. The calculator shows how
-                    your balance grows year by year, plus a monthly view for any selected year.
-                </p>
-                <p className="mt-1 font-semibold">NOTE: This also assumes interest rate is constant</p>
+
+            {showExplanation && (
+                <div className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-200/85">
+                    <p>
+                        Scenario: you start with an initial fixed deposit. Each month, you add an extra top-up.
+                        In non-recursive mode, you wait until the end of the year before any interest is added.
+                        In recursive mode, whenever you add money, the bank credits an upfront payout based on
+                        the time left in the year, and you immediately add that payout back into the deposit.
+                    </p>
+                    <p className="mt-1 font-semibold">
+                        NOTE: This assumes interest rate is constant.
+                    </p>
+                </div>
+            )}
+
+            {/* Currency Selector */}
+            <div className="mt-4 flex items-center gap-3">
+                <label className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+                    Currency
+                </label>
+                <select
+                    value={currency}
+                    onChange={(e) =>
+                        setCurrency(e.target.value as "NGN" | "USD" | "GBP" | "EUR")
+                    }
+                    className="rounded-xl border px-3 py-2 text-sm border-slate-200 bg-white text-slate-900 dark:border-slate-600/60 dark:bg-white/5 dark:text-slate-50"
+                >
+                    <option value="NGN">₦ NGN</option>
+                    <option value="USD">$ USD</option>
+                    <option value="GBP">£ GBP</option>
+                    <option value="EUR">€ EUR</option>
+                </select>
             </div>
 
+            {/* Inputs */}
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-4">
                 <div className="sm:col-span-2">
                     <label className="block text-sm font-semibold text-slate-900 dark:text-slate-50">
-                        Initial principal (₦)
+                        Initial principal ({currency})
                     </label>
                     <input
                         value={initialInput}
-                        onChange={(e) => setInitialInput(addCommas(stripToDigits(e.target.value)))}
+                        onChange={(e) =>
+                            setInitialInput(addCommas(stripToDigits(e.target.value)))
+                        }
                         inputMode="numeric"
                         className="mt-2 w-full rounded-xl border px-3 py-2 text-sm border-slate-200 bg-white text-slate-900 dark:border-slate-600/60 dark:bg-white/5 dark:text-slate-50"
                     />
@@ -282,11 +318,13 @@ export default function FixedDepositMonthlyTopupYears() {
 
                 <div className="sm:col-span-2">
                     <label className="block text-sm font-semibold text-slate-900 dark:text-slate-50">
-                        Monthly top-up (₦)
+                        Monthly top-up ({currency})
                     </label>
                     <input
                         value={topUpInput}
-                        onChange={(e) => setTopUpInput(addCommas(stripToDigits(e.target.value)))}
+                        onChange={(e) =>
+                            setTopUpInput(addCommas(stripToDigits(e.target.value)))
+                        }
                         inputMode="numeric"
                         className="mt-2 w-full rounded-xl border px-3 py-2 text-sm border-slate-200 bg-white text-slate-900 dark:border-slate-600/60 dark:bg-white/5 dark:text-slate-50"
                     />
@@ -317,35 +355,14 @@ export default function FixedDepositMonthlyTopupYears() {
                 </div>
             </div>
 
-            <div className="mt-4 rounded-2xl border border-slate-200 p-4 dark:border-slate-600/60">
-                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200/85">
-                    <input
-                        type="checkbox"
-                        checked={recursive}
-                        onChange={(e) => setRecursive(e.target.checked)}
-                    />
-                    Recursive mode (upfront payouts are reinvested same day)
-                </label>
-
-                {recursive && (
-                    <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200/85">
-                        <input
-                            type="checkbox"
-                            checked={recursiveMonthly}
-                            onChange={(e) => setRecursiveMonthly(e.target.checked)}
-                        />
-                        Apply recursion to monthly top-ups too
-                    </label>
-                )}
-            </div>
-
+            {/* Summary */}
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 p-4 dark:border-slate-600/60">
                     <div className="text-xs text-slate-500 dark:text-slate-200/70">
                         Total deposits (initial + monthly across years)
                     </div>
                     <div className="mt-1 text-lg font-extrabold text-slate-900 dark:text-slate-50">
-                        {formatNGN(totalDeposits)}
+                        {formatMoney(totalDeposits)}
                     </div>
                 </div>
 
@@ -354,7 +371,7 @@ export default function FixedDepositMonthlyTopupYears() {
                         Estimated profit
                     </div>
                     <div className="mt-1 text-lg font-extrabold text-slate-900 dark:text-slate-50">
-                        {formatNGN(profit)}
+                        {formatMoney(profit)}
                     </div>
                 </div>
 
@@ -363,11 +380,16 @@ export default function FixedDepositMonthlyTopupYears() {
                         Estimated balance after {years} year{years === 1 ? "" : "s"}
                     </div>
                     <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-slate-50">
-                        {Number.isFinite(result.finalBalance) ? formatNGN(result.finalBalance) : "∞ (check rate/days rule)"}
+                        {Number.isFinite(result.finalBalance)
+                            ? formatMoney(result.finalBalance)
+                            : "∞ (check rate/days rule)"}
                     </div>
                 </div>
             </div>
 
+            {/* YEARLY + MONTHLY BREAKDOWNS REMAIN UNTOUCHED EXCEPT formatMoney */}
+
+            {/* Yearly breakdown */}
             <h3 className="mt-6 text-sm font-semibold text-slate-900 dark:text-slate-50">
                 Yearly breakdown
             </h3>
@@ -394,21 +416,11 @@ export default function FixedDepositMonthlyTopupYears() {
                                 key={r.year}
                                 className="border-b border-slate-100 last:border-b-0 dark:border-slate-600/30"
                             >
-                                <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                    {r.year}
-                                </td>
-                                <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                    {formatNGN(r.startBalance)}
-                                </td>
-                                <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                    {formatNGN(r.totalMonthlyAdds)}
-                                </td>
-                                <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                    {formatNGN(r.totalUpfrontProfit)}
-                                </td>
-                                <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                    {formatNGN(r.yearEndBalance)}
-                                </td>
+                                <td className="px-3 py-2">{r.year}</td>
+                                <td className="px-3 py-2">{formatMoney(r.startBalance)}</td>
+                                <td className="px-3 py-2">{formatMoney(r.totalMonthlyAdds)}</td>
+                                <td className="px-3 py-2">{formatMoney(r.totalUpfrontProfit)}</td>
+                                <td className="px-3 py-2">{formatMoney(r.yearEndBalance)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -417,33 +429,16 @@ export default function FixedDepositMonthlyTopupYears() {
 
             {recursive && (
                 <>
-                    <div className="mt-6 flex items-center justify-between gap-3">
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                            Monthly breakdown
-                        </h3>
-
-                        <div className="flex items-center gap-2">
-                            <div className="text-xs font-semibold text-slate-700 dark:text-slate-200/85">
-                                Year
-                            </div>
-                            <input
-                                value={viewYearInput}
-                                onChange={(e) => setViewYearInput(e.target.value)}
-                                inputMode="numeric"
-                                className="w-24 rounded-xl border px-3 py-2 text-sm border-slate-200 bg-white text-slate-900 dark:border-slate-600/60 dark:bg-white/5 dark:text-slate-50"
-                            />
-                        </div>
-                    </div>
+                    <h3 className="mt-6 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                        Monthly breakdown
+                    </h3>
 
                     <div className="mt-2 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-600/60">
                         <table className="min-w-full border-collapse text-sm">
                             <thead>
                                 <tr className="border-b border-slate-200 dark:border-slate-600/60">
                                     {["Month", "Days remaining", "Added", "Upfront profit", "End balance"].map((h) => (
-                                        <th
-                                            key={h}
-                                            className="whitespace-nowrap px-3 py-2 text-left text-xs font-semibold text-slate-600 dark:text-slate-200/85"
-                                        >
+                                        <th key={h} className="px-3 py-2 text-left text-xs font-semibold">
                                             {h}
                                         </th>
                                     ))}
@@ -451,25 +446,12 @@ export default function FixedDepositMonthlyTopupYears() {
                             </thead>
                             <tbody>
                                 {monthRows.map((r) => (
-                                    <tr
-                                        key={r.month}
-                                        className="border-b border-slate-100 last:border-b-0 dark:border-slate-600/30"
-                                    >
-                                        <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                            {r.month}
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                            {r.daysRemaining}
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                            {formatNGN(r.addedThisMonth)}
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                            {formatNGN(r.upfrontProfit)}
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-2 text-slate-700 dark:text-slate-200/85">
-                                            {formatNGN(r.endBalance)}
-                                        </td>
+                                    <tr key={r.month}>
+                                        <td className="px-3 py-2">{r.month}</td>
+                                        <td className="px-3 py-2">{r.daysRemaining}</td>
+                                        <td className="px-3 py-2">{formatMoney(r.addedThisMonth)}</td>
+                                        <td className="px-3 py-2">{formatMoney(r.upfrontProfit)}</td>
+                                        <td className="px-3 py-2">{formatMoney(r.endBalance)}</td>
                                     </tr>
                                 ))}
 

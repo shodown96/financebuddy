@@ -15,7 +15,7 @@ export default function HomePage() {
       <section className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <CardLink
           href={PATHS.PROGRESSIVE_TAX_CALCULATOR}
-          title="Progressive Tax Calculator"
+          title="Nigerian Tax Calculator"
           description="Compute annual tax using progressive bands. Supports monthly or annual income input."
         />
 
@@ -29,6 +29,18 @@ export default function HomePage() {
           href={PATHS.ANNUAL_INTEREST_ESTIMATOR}
           title="Annual Interest Estimator"
           description="Estimate how your savings can grow over multiple years. You can choose normal yearly compounding, or “recursive” mode that simulates reinvesting upfront interest payouts repeatedly."
+        />
+
+        <CardLink
+          href={PATHS.COMPARE_ANNUAL_ESTIMATES}
+          title="Compare Annual Estimates"
+          description="Compare how your savings could grow over multiple years. Choose standard yearly compounding, or switch to recursive mode to simulate reinvesting upfront interest payouts as they are credited."
+        />
+
+        <CardLink
+          href={PATHS.UK_TAX_CALCULATOR}
+          title="UK Tax Calculator"
+          description="Compute annual tax using progressive bands. Supports monthly or annual income input."
         />
       </section>
 
