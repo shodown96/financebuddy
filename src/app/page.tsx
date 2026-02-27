@@ -42,6 +42,12 @@ export default function HomePage() {
           title="UK Tax Calculator"
           description="Compute annual tax using progressive bands. Supports monthly or annual income input."
         />
+
+        <CardLink
+          href={PATHS.BUDGET_CALCULATOR}
+          title="Budget Calculator"
+          description="Plan and allocate your income into structured budget categories"
+        />
       </section>
 
       <section className="mt-6 rounded-2xl border border-gray-200 p-4 dark:border-gray-600/60 font-semibold">

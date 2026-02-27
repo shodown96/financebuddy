@@ -4,7 +4,8 @@ export enum PATHS {
     PROGRESSIVE_TAX_CALCULATOR = "progressive-tax-calculator",
     ANNUAL_INTEREST_ESTIMATOR = "annual-interest-estimator",
     UK_TAX_CALCULATOR = "uk-tax-calculator",
-    COMPARE_ANNUAL_ESTIMATES = "compare-annual-estimates"
+    COMPARE_ANNUAL_ESTIMATES = "compare-annual-estimates",
+    BUDGET_CALCULATOR = "budget-calculator"
 }
 
 export const originURL = process.env.NODE_ENV === 'development' ?
