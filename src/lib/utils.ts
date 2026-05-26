@@ -89,3 +89,14 @@ export function buildSchedule(params: {
         rows,
     };
 }
+
+export const formatNumber = (value: string | number, locale = "en-US") => {
+  if (value === "" || isNaN(Number(value))) return "";
+  const [_, decimal = ""] = value.toString().split(".");
+  const digits = Math.min(decimal.length, 20); // max 20 decimal places
+
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(Number(value));
+};

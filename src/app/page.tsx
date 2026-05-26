@@ -1,65 +1,127 @@
 import { CardLink } from "@/components/custom/card-link";
+import NavBar from "@/components/custom/navbar";
 import { PATHS } from "@/lib/constants/paths";
+
+const TAX_ICON = (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l2 2 4-4M7 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-2m-5 0V1m0 2a1 1 0 100 2 1 1 0 000-2z" />
+  </svg>
+);
+
+const SAVINGS_ICON = (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const COMPARE_ICON = (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+);
+
+const BUDGET_ICON = (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+  </svg>
+);
 
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-4xl p-4 sm:p-6">
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-50">
-        Finance Calculators
-      </h1>
-
-      <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-200/85">
-        Pick a calculator below. These tools run locally in your browser.
-      </p>
-
-      <section className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <CardLink
-          href={PATHS.PROGRESSIVE_TAX_CALCULATOR}
-          title="Nigerian Tax Calculator"
-          description="Compute annual tax using progressive bands. Supports monthly or annual income input."
-        />
-
-        <CardLink
-          href={PATHS.MONTHLY_INTEREST_ESTIMATOR}
-          title="Monthly Interest Estimator"
-          description="Estimates your monthly interest and your total balance by the end of the year, assuming you deposit the same amount every month and your savings compounds monthly."
-        />
-
-        <CardLink
-          href={PATHS.ANNUAL_INTEREST_ESTIMATOR}
-          title="Annual Interest Estimator"
-          description="Estimate how your savings can grow over multiple years. You can choose normal yearly compounding, or “recursive” mode that simulates reinvesting upfront interest payouts repeatedly."
-        />
-
-        <CardLink
-          href={PATHS.COMPARE_ANNUAL_ESTIMATES}
-          title="Compare Annual Estimates"
-          description="Compare how your savings could grow over multiple years. Choose standard yearly compounding, or switch to recursive mode to simulate reinvesting upfront interest payouts as they are credited."
-        />
-
-        <CardLink
-          href={PATHS.UK_TAX_CALCULATOR}
-          title="UK Tax Calculator"
-          description="Compute annual tax using progressive bands. Supports monthly or annual income input."
-        />
-
-        <CardLink
-          href={PATHS.BUDGET_CALCULATOR}
-          title="Budget Calculator"
-          description="Plan and allocate your income into structured budget categories"
-        />
-      </section>
-
-      <section className="mt-6 rounded-2xl border border-gray-200 p-4 dark:border-gray-600/60 font-semibold">
-        <div className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-          Note
+    <>
+      <NavBar />
+      <main className="mx-auto max-w-5xl px-4 py-10 sm:py-14 sm:px-6">
+        {/* Hero */}
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-50 tracking-tight">
+            Finance Buddy
+          </h1>
+          <p className="mt-3 text-base text-stone-500 dark:text-stone-400 max-w-xl">
+            Free, browser-based calculators for tax, savings growth, and budgeting.
+            All calculations happen locally. Nothing is sent anywhere.
+          </p>
         </div>
-        <div className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-200/85">
-          These calculators are for estimation. Real-world tax or interest may
-          differ depending on reliefs, fees, compounding rules, and timing.
-          These are currently tailored to the Nigerian system.
-        </div>
-      </section>
-    </main>
+
+        {/* Tax calculators */}
+        <section className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3">
+            Tax Calculators
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <CardLink
+              href={PATHS.PROGRESSIVE_TAX_CALCULATOR}
+              title="Nigeria: Income Tax"
+              description="Progressive PAYE bands. Supports monthly or annual income input."
+              icon={TAX_ICON}
+            />
+            <CardLink
+              href={PATHS.UK_TAX_CALCULATOR}
+              title="United Kingdom: Income Tax"
+              description="Income tax with personal allowance taper, National Insurance, and Scotland option."
+              icon={TAX_ICON}
+            />
+            <CardLink
+              href={PATHS.CANADA_TAX_CALCULATOR}
+              title="Canada: Income Tax"
+              description="Federal + provincial tax, CPP, and EI deductions for all provinces and territories."
+              icon={TAX_ICON}
+            />
+            <CardLink
+              href={PATHS.US_TAX_CALCULATOR}
+              title="United States: Income Tax"
+              description="Federal brackets, FICA (Social Security + Medicare), and state income tax for all 50 states."
+              icon={TAX_ICON}
+            />
+          </div>
+        </section>
+
+        {/* Savings calculators */}
+        <section className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3">
+            Savings & Interest
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <CardLink
+              href={PATHS.MONTHLY_INTEREST_ESTIMATOR}
+              title="Monthly Interest Estimator"
+              description="See how a fixed monthly deposit grows with compound interest over time."
+              icon={SAVINGS_ICON}
+            />
+            <CardLink
+              href={PATHS.ANNUAL_INTEREST_ESTIMATOR}
+              title="Annual Interest Estimator"
+              description="Multi-year savings projection with monthly top-ups and compound interest."
+              icon={SAVINGS_ICON}
+            />
+            <CardLink
+              href={PATHS.COMPARE_ANNUAL_ESTIMATES}
+              title="Compare Annual Estimates"
+              description="Side-by-side comparison of two savings scenarios across multiple years."
+              icon={COMPARE_ICON}
+            />
+          </div>
+        </section>
+
+        {/* Budget */}
+        <section className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3">
+            Budgeting
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <CardLink
+              href={PATHS.BUDGET_CALCULATOR}
+              title="Budget Calculator"
+              description="Allocate your income across spending categories and track what is left."
+              icon={BUDGET_ICON}
+            />
+          </div>
+        </section>
+
+        <p className="text-xs text-stone-400 dark:text-stone-500">
+          These tools are for estimation only. Tax rules change annually and vary by individual
+          circumstances. Always consult a qualified professional for financial or tax advice.
+        </p>
+      </main>
+    </>
   );
 }

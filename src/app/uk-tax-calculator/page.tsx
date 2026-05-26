@@ -1,23 +1,17 @@
-
-"use client";
-
 import NavBar from "@/components/custom/navbar";
-import UKProgressiveTaxCalculator from "@/components/custom/uk-tax-calculator";
+import UKTaxCalculator from "@/components/custom/uk-tax-calculator";
 
-export default function TaxPage() {
+export const metadata = {
+  title: "UK Tax Calculator | Finance Buddy",
+  description: "Income tax and National Insurance calculator for England, Wales, Northern Ireland, and Scotland.",
+};
+
+export default function UKTaxPage() {
   return (
     <>
       <NavBar />
-      <main className="mx-auto max-w-4xl p-4 sm:p-6">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-xl sm:text-2xl font-extrabold">
-            UK Progressive Tax Calculator
-          </h1>
-        </div>
-
-        <div className="mt-4">
-          <UKProgressiveTaxCalculator />
-        </div>
+      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        <UKTaxCalculator />
       </main>
     </>
   );
