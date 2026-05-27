@@ -217,7 +217,7 @@ export default function UKTaxCalculator() {
                 <td className="px-4 py-2.5 text-right text-stone-700 dark:text-stone-300">{fmt(row.monthly)}</td>
               </tr>
             ))}
-            {/* Net income — highlighted */}
+            {/* Net income, highlighted */}
             <tr className="bg-teal-50 dark:bg-teal-900/20">
               <td className="px-4 py-3 font-bold text-teal-800 dark:text-teal-300">Net income (take-home)</td>
               <td className="px-4 py-3 text-right font-bold text-teal-800 dark:text-teal-300">{fmt(netAnnual)}</td>

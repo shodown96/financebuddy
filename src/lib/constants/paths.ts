@@ -9,6 +9,7 @@ export enum PATHS {
   CANADA_TAX_CALCULATOR = "/canada-tax-calculator",
   US_TAX_CALCULATOR = "/us-tax-calculator",
   RWANDA_TAX_CALCULATOR = "/rwanda-tax-calculator",
+  DICTIONARY = "/dictionary",
 }
 
 export const originURL =

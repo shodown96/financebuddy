@@ -28,6 +28,10 @@ const NAV_GROUPS = [
     label: "Budget",
     links: [{ href: PATHS.BUDGET_CALCULATOR, label: "Budget Calculator" }],
   },
+  {
+    label: "Dictionary",
+    links: [{ href: PATHS.DICTIONARY, label: "Financial Dictionary" }],
+  },
 ];
 
 function DropdownGroup({ label, links }: { label: string; links: { href: string; label: string }[] }) {
