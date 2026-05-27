@@ -1,6 +1,22 @@
 import { CardLink } from "@/components/custom/card-link";
 import NavBar from "@/components/custom/navbar";
 import { PATHS } from "@/lib/constants/paths";
+import type { Metadata } from "next";
+import { APP_DESCRIPTION } from "@/lib/constants/app";
+
+export const metadata: Metadata = {
+  title: "Finance Buddy — Free Tax, Savings & Budget Calculators",
+  description: APP_DESCRIPTION,
+  openGraph: {
+    title: "Finance Buddy — Free Tax, Savings & Budget Calculators",
+    description: APP_DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    title: "Finance Buddy — Free Tax, Savings & Budget Calculators",
+    description: APP_DESCRIPTION,
+  },
+};
 
 const TAX_ICON = (
   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>

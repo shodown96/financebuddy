@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Poppins, Roboto } from "next/font/google";
 import "./globals.css";
-import { APP_NAME } from "@/lib/constants/app";
+import { APP_NAME, APP_DESCRIPTION, APP_URL, DEVELOPER_LINK } from "@/lib/constants/app";
 import Footer from "@/components/custom/footer";
 
 const poppinsSans = Poppins({
@@ -18,8 +18,46 @@ const robotoSans = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: APP_NAME,
-  description: "Free financial calculators: tax, savings, compound interest and budget tools.",
+  metadataBase: new URL(APP_URL),
+  title: {
+    default: APP_NAME,
+    template: `%s | ${APP_NAME}`,
+  },
+  description: APP_DESCRIPTION,
+  keywords: [
+    "tax calculator",
+    "PAYE",
+    "Nigeria income tax",
+    "UK income tax",
+    "Canada income tax",
+    "US income tax",
+    "Rwanda income tax",
+    "compound interest calculator",
+    "savings calculator",
+    "budget calculator",
+    "financial dictionary",
+    "Finance Buddy",
+    "free financial tools",
+    "income tax calculator",
+  ],
+  authors: [{ name: "Elijah Soladoye", url: DEVELOPER_LINK }],
+  creator: "Elijah Soladoye",
+  openGraph: {
+    type: "website",
+    siteName: APP_NAME,
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 export default function RootLayout({
