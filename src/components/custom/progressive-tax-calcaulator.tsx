@@ -44,7 +44,7 @@ const CARD_CLS =
 
 export default function ProgressiveTaxCalculator() {
   const [mode, setMode] = useState<IncomeMode>("annual");
-  const [incomeInput, setIncomeInput] = useState("15,000,000");
+  const [incomeInput, setIncomeInput] = useState("45,000,000");
 
   const incomeDigits = useMemo(() => stripToDigits(incomeInput), [incomeInput]);
   const incomeNumber = useMemo(() => {
@@ -93,7 +93,7 @@ export default function ProgressiveTaxCalculator() {
         value={incomeInput}
         onChange={(e) => setIncomeInput(addCommas(stripToDigits(e.target.value)))}
         inputMode="numeric"
-        placeholder={mode === "monthly" ? "e.g. 1,250,000" : "e.g. 15,000,000"}
+        placeholder={mode === "monthly" ? "e.g. 3,750,000" : "e.g. 45,000,000"}
         className={INPUT_CLS}
       />
       <p className="mt-1.5 text-xs text-stone-500 dark:text-stone-400">

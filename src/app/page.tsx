@@ -5,15 +5,15 @@ import type { Metadata } from "next";
 import { APP_DESCRIPTION } from "@/lib/constants/app";
 
 export const metadata: Metadata = {
-  title: "Finance Buddy — Free Tax, Savings & Budget Calculators",
+  title: "Finance Buddy, Free Tax, Savings & Budget Calculators",
   description: APP_DESCRIPTION,
   openGraph: {
-    title: "Finance Buddy — Free Tax, Savings & Budget Calculators",
+    title: "Finance Buddy, Free Tax, Savings & Budget Calculators",
     description: APP_DESCRIPTION,
     url: "/",
   },
   twitter: {
-    title: "Finance Buddy — Free Tax, Savings & Budget Calculators",
+    title: "Finance Buddy, Free Tax, Savings & Budget Calculators",
     description: APP_DESCRIPTION,
   },
 };
@@ -154,7 +154,7 @@ export default function HomePage() {
             <CardLink
               href={PATHS.DICTIONARY}
               title="Financial Dictionary"
-              description="Plain-English definitions for 80+ terms covering savings, investing, stocks, bonds, funds, and wealth protection."
+              description="Plain-English definitions for 100+ terms covering savings, investing, stocks, bonds, funds, and wealth protection."
               icon={DICT_ICON}
             />
           </div>
