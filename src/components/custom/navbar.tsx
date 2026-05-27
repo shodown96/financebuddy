@@ -13,6 +13,7 @@ const NAV_GROUPS = [
       { href: PATHS.UK_TAX_CALCULATOR, label: "United Kingdom" },
       { href: PATHS.CANADA_TAX_CALCULATOR, label: "Canada" },
       { href: PATHS.US_TAX_CALCULATOR, label: "United States" },
+      { href: PATHS.RWANDA_TAX_CALCULATOR, label: "Rwanda" },
     ],
   },
   {

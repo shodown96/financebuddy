@@ -72,6 +72,12 @@ export default function HomePage() {
               description="Federal brackets, FICA (Social Security + Medicare), and state income tax for all 50 states."
               icon={TAX_ICON}
             />
+            <CardLink
+              href={PATHS.RWANDA_TAX_CALCULATOR}
+              title="Rwanda: Income Tax"
+              description="PAYE progressive bands with RSSB deductions: pension, maternity, and CBHI (2025 rates)."
+              icon={TAX_ICON}
+            />
           </div>
         </section>
 
