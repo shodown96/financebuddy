@@ -25,7 +25,7 @@ export default async function OGImage() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            padding: "72px 64px",
+            padding: "72px 72px",
             flex: 1,
           }}
         >
@@ -34,15 +34,15 @@ export default async function OGImage() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "10px",
-              marginBottom: "40px",
+              gap: "12px",
+              marginBottom: "48px",
             }}
           >
             <div
               style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "10px",
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
                 backgroundColor: "#0F766E",
                 display: "flex",
                 alignItems: "center",
@@ -51,8 +51,8 @@ export default async function OGImage() {
             >
               <div
                 style={{
-                  width: "16px",
-                  height: "16px",
+                  width: "20px",
+                  height: "20px",
                   borderRadius: "50%",
                   backgroundColor: "#CCFBF1",
                 }}
@@ -60,7 +60,7 @@ export default async function OGImage() {
             </div>
             <span
               style={{
-                fontSize: "18px",
+                fontSize: "22px",
                 fontWeight: "700",
                 color: "#0F766E",
                 letterSpacing: "0.04em",
@@ -73,41 +73,23 @@ export default async function OGImage() {
           {/* Headline */}
           <div
             style={{
-              fontSize: "60px",
+              display: "flex",
+              flexDirection: "column",
+              fontSize: "76px",
               fontWeight: "800",
               color: "#1C1917",
-              lineHeight: 1.1,
-              letterSpacing: "-0.025em",
-              marginBottom: "22px",
-            }}
-          >
-            Financial tools
-            <br />
-            that work for you.
-          </div>
-
-          {/* Subheadline */}
-          <div
-            style={{
-              fontSize: "20px",
-              color: "#78716C",
-              lineHeight: 1.5,
+              lineHeight: 1.05,
+              letterSpacing: "-0.03em",
               marginBottom: "44px",
-              maxWidth: "510px",
             }}
           >
-            Tax calculators, savings estimators, budget planner, and financial
-            dictionary — all free, all private.
+            <span>Financial tools</span>
+            <span>that work for you.</span>
           </div>
 
           {/* Tool type pills */}
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {[
-              "Tax Calculators",
-              "Savings Tools",
-              "Budget Planner",
-              "Financial Dictionary",
-            ].map((label) => (
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            {["Tax", "Savings", "Budget", "Dictionary"].map((label) => (
               <div
                 key={label}
                 style={{
@@ -115,8 +97,8 @@ export default async function OGImage() {
                   border: "1.5px solid #BBF7D0",
                   color: "#15803D",
                   borderRadius: "999px",
-                  padding: "8px 20px",
-                  fontSize: "14px",
+                  padding: "10px 24px",
+                  fontSize: "16px",
                   fontWeight: "600",
                   display: "flex",
                 }}
@@ -125,29 +107,6 @@ export default async function OGImage() {
               </div>
             ))}
           </div>
-
-          {/* Bottom privacy note */}
-          <div
-            style={{
-              marginTop: "40px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            <div
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                backgroundColor: "#A8A29E",
-                display: "flex",
-              }}
-            />
-            <span style={{ fontSize: "13px", color: "#A8A29E" }}>
-              All calculations run in your browser. Nothing is sent anywhere.
-            </span>
-          </div>
         </div>
 
         {/* Right teal panel */}
@@ -155,9 +114,9 @@ export default async function OGImage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            width: "380px",
+            width: "360px",
             backgroundColor: "#0F766E",
-            padding: "56px 44px",
+            padding: "64px 48px",
           }}
         >
           {/* Panel heading */}
@@ -166,60 +125,46 @@ export default async function OGImage() {
               fontSize: "11px",
               fontWeight: "700",
               color: "#99F6E4",
-              letterSpacing: "0.12em",
+              letterSpacing: "0.14em",
               textTransform: "uppercase",
-              marginBottom: "28px",
+              marginBottom: "32px",
               display: "flex",
             }}
           >
-            What&apos;s inside
+            Tools
           </div>
 
-          {/* Feature list */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px", flex: 1 }}>
+          {/* Feature list — titles only */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "28px", flex: 1 }}>
             {[
-              { title: "Tax Calculators", desc: "Nigeria · UK · Canada · US · Rwanda" },
-              { title: "Compound Interest", desc: "Monthly, annual & Nigerian FD modes" },
-              { title: "Savings Estimator", desc: "Multi-year projections with top-ups" },
-              { title: "Budget Calculator", desc: "Allocate income across categories" },
-              { title: "Financial Dictionary", desc: "146 terms, plain English" },
-            ].map((item) => (
+              "Tax Calculators",
+              "Compound Interest",
+              "Savings Estimator",
+              "Budget Calculator",
+              "Financial Dictionary",
+            ].map((title) => (
               <div
-                key={item.title}
-                style={{ display: "flex", flexDirection: "column", gap: "3px" }}
+                key={title}
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
-                >
-                  <div
-                    style={{
-                      width: "5px",
-                      height: "5px",
-                      borderRadius: "50%",
-                      backgroundColor: "#5EEAD4",
-                      flexShrink: 0,
-                      display: "flex",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontSize: "15px",
-                      fontWeight: "700",
-                      color: "#FFFFFF",
-                    }}
-                  >
-                    {item.title}
-                  </span>
-                </div>
-                <span
                   style={{
-                    fontSize: "12px",
-                    color: "#5EEAD4",
-                    paddingLeft: "13px",
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    backgroundColor: "#5EEAD4",
+                    flexShrink: 0,
                     display: "flex",
                   }}
+                />
+                <span
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "700",
+                    color: "#FFFFFF",
+                  }}
                 >
-                  {item.desc}
+                  {title}
                 </span>
               </div>
             ))}
@@ -235,10 +180,10 @@ export default async function OGImage() {
               gap: "4px",
             }}
           >
-            <span style={{ fontSize: "13px", fontWeight: "600", color: "#CCFBF1" }}>
+            <span style={{ fontSize: "14px", fontWeight: "600", color: "#CCFBF1" }}>
               Finance Buddy
             </span>
-            <span style={{ fontSize: "11px", color: "#5EEAD4" }}>
+            <span style={{ fontSize: "12px", color: "#5EEAD4" }}>
               financebuddy.vercel.app
             </span>
           </div>
