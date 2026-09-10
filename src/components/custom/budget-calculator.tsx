@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface BudgetItem { id: string; name: string; amount: number }
+
+const STORAGE_KEY = "financebuddy:budget-calculator";
 
 const INPUT_CLS =
   "w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition " +
@@ -16,6 +18,30 @@ export default function BudgetCalculator() {
   const [items, setItems] = useState<BudgetItem[]>([]);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState<number | "">("");
+  const hasLoaded = useRef(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as { baseAmount?: number; items?: BudgetItem[] };
+        if (typeof saved.baseAmount === "number") setBaseAmount(saved.baseAmount);
+        if (Array.isArray(saved.items)) setItems(saved.items);
+      }
+    } catch {
+      // ignore corrupted storage
+    }
+    hasLoaded.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoaded.current) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ baseAmount, items }));
+    } catch {
+      // ignore write failures (e.g. storage full or disabled)
+    }
+  }, [baseAmount, items]);
 
   const totalAllocated = useMemo(() => items.reduce((s, i) => s + i.amount, 0), [items]);
   const remaining = useMemo(() => baseAmount - totalAllocated, [baseAmount, totalAllocated]);
@@ -29,17 +55,39 @@ export default function BudgetCalculator() {
 
   const removeItem = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
 
+  const resetAll = () => {
+    setBaseAmount(0);
+    setItems([]);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  };
+
   const fmt = (v: number) =>
     new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(v);
 
   return (
     <div>
-      <h2 className="text-lg sm:text-xl font-extrabold text-stone-900 dark:text-stone-50">
-        Budget Calculator
-      </h2>
-      <p className="mt-1.5 text-sm text-stone-500 dark:text-stone-400">
-        Enter your monthly income, then add spending categories to see how much remains.
-      </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg sm:text-xl font-extrabold text-stone-900 dark:text-stone-50">
+            Budget Calculator
+          </h2>
+          <p className="mt-1.5 text-sm text-stone-500 dark:text-stone-400">
+            Enter your monthly income, then add spending categories to see how much remains.
+          </p>
+        </div>
+        {(baseAmount > 0 || items.length > 0) && (
+          <button
+            onClick={resetAll}
+            className="shrink-0 text-xs font-medium text-stone-500 hover:text-red-600 hover:underline dark:text-stone-400 dark:hover:text-red-400"
+          >
+            Reset
+          </button>
+        )}
+      </div>
 
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         {/* Left column */}
