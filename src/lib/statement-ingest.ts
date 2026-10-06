@@ -1,11 +1,13 @@
 // Browser-only helpers that shrink uploads before anything reaches the model.
-// Text PDFs become a handful of relevant pages of plain text; images get
-// downscaled; only scanned PDFs are sent as files.
+// Text PDFs and spreadsheets become a handful of relevant pages of plain text;
+// images get downscaled; only scanned PDFs are sent as files.
 
 export interface ParsedPage {
   page: number;
   text: string;
   score: number;
+  // Sheet name (spreadsheets only)
+  label?: string;
 }
 
 export interface ParsedPdf {
@@ -53,6 +55,28 @@ export async function parsePdf(file: File): Promise<ParsedPdf> {
   const textChars = pages.reduce((n, p) => n + p.text.length, 0);
 
   return { totalPages, pages, isScanned: textChars < totalPages * 100 };
+}
+
+export const SPREADSHEET_EXTENSIONS = [".xlsx", ".xlsm", ".xls", ".ods", ".csv"];
+
+export function isSpreadsheet(file: File): boolean {
+  const name = file.name.toLowerCase();
+  return SPREADSHEET_EXTENSIONS.some((ext) => name.endsWith(ext));
+}
+
+// Each sheet becomes one "page" of CSV text, so it flows through the same
+// scoring and selection as a text PDF
+export async function parseSpreadsheet(file: File): Promise<ParsedPdf> {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.read(await file.arrayBuffer(), { dense: true });
+
+  const pages = wb.SheetNames.map((name, i) => {
+    const csv = XLSX.utils.sheet_to_csv(wb.Sheets[name], { blankrows: false, strip: true });
+    const text = `Sheet: ${name}\n${csv.replace(/,+$/gm, "")}`.trim();
+    return { page: i + 1, text, score: scorePage(text), label: name };
+  });
+
+  return { totalPages: pages.length, pages, isScanned: false };
 }
 
 // Top scoring pages, returned in page order

@@ -9,7 +9,15 @@ import {
   type FundamentalsExplanation,
   type TextPage,
 } from "@/lib/validations/fundamentals";
-import { downscaleImage, parsePdf, pickPages, type ParsedPdf } from "@/lib/statement-ingest";
+import {
+  SPREADSHEET_EXTENSIONS,
+  downscaleImage,
+  isSpreadsheet,
+  parsePdf,
+  parseSpreadsheet,
+  pickPages,
+  type ParsedPdf,
+} from "@/lib/statement-ingest";
 import InfoTip from "@/components/custom/info-tip";
 import { FUNDAMENTALS_GLOSSARY } from "@/lib/constants/fundamentals-glossary";
 
@@ -31,10 +39,10 @@ const CARD_CLS =
 interface Upload {
   id: string;
   file: File;
-  kind: "pdf" | "image";
+  kind: "pdf" | "image" | "sheet";
   status: "parsing" | "ready" | "error";
   parsed?: ParsedPdf;
-  // Page numbers to send as text (text PDFs only)
+  // Page or sheet numbers to send as text (text PDFs and spreadsheets)
   selected: number[];
   error?: string;
 }
@@ -115,22 +123,23 @@ export default function FundamentalAnalysis() {
   const addFiles = async (files: FileList | File[]) => {
     setError(null);
     const incoming = [...files].slice(0, MAX_FILES - uploads.length);
-    const rejected = [...files].filter((f) => !ACCEPTED.includes(f.type));
+    const accepted = (f: File) => ACCEPTED.includes(f.type) || isSpreadsheet(f);
+    const rejected = [...files].filter((f) => !accepted(f));
     if (rejected.length) setError(`Unsupported file: ${rejected.map((f) => f.name).join(", ")}`);
 
-    for (const file of incoming.filter((f) => ACCEPTED.includes(f.type))) {
+    for (const file of incoming.filter(accepted)) {
       const upload: Upload = {
         id: crypto.randomUUID(),
         file,
-        kind: file.type === "application/pdf" ? "pdf" : "image",
+        kind: isSpreadsheet(file) ? "sheet" : file.type === "application/pdf" ? "pdf" : "image",
         status: "parsing",
         selected: [],
       };
       setUploads((prev) => [...prev, upload]);
 
       try {
-        if (upload.kind === "pdf") {
-          const parsed = await parsePdf(file);
+        if (upload.kind !== "image") {
+          const parsed = upload.kind === "pdf" ? await parsePdf(file) : await parseSpreadsheet(file);
           patchUpload(upload.id, { status: "ready", parsed, selected: pickPages(parsed.pages) });
         } else {
           patchUpload(upload.id, { status: "ready", file: await downscaleImage(file) });
@@ -146,7 +155,8 @@ export default function FundamentalAnalysis() {
 
   const ready = uploads.filter((u) => u.status === "ready");
   const scannedPdfs = ready.filter((u) => u.kind === "pdf" && u.parsed?.isScanned);
-  const textPdfs = ready.filter((u) => u.kind === "pdf" && !u.parsed?.isScanned);
+  // Spreadsheets are never scanned, so they always go as text
+  const textPdfs = ready.filter((u) => u.kind !== "image" && !u.parsed?.isScanned);
   const images = ready.filter((u) => u.kind === "image");
   const binaryBytes = [...scannedPdfs, ...images].reduce((n, u) => n + u.file.size, 0);
   const tooLarge = binaryBytes > MAX_UPLOAD_BYTES;
@@ -211,7 +221,7 @@ export default function FundamentalAnalysis() {
         Fundamental Analysis
       </h2>
       <p className="mt-1.5 text-sm text-stone-500 dark:text-stone-400">
-        Upload a company&apos;s financial statements (PDF or screenshots). We pull out the key
+        Upload a company&apos;s financial statements (PDF, Excel or screenshots). We pull out the key
         figures and show how revenue, profit, EPS and debt changed against the prior period.
       </p>
 
@@ -239,13 +249,13 @@ export default function FundamentalAnalysis() {
             Drop files here or click to browse
           </p>
           <p className="mt-1 text-xs text-stone-400 dark:text-stone-500">
-            PDF, PNG, JPEG or WebP. Up to {MAX_FILES} files. Annual reports work best.
+            PDF, Excel, CSV, PNG, JPEG or WebP. Up to {MAX_FILES} files. Annual reports work best.
           </p>
           <input
             ref={fileInputRef}
             type="file"
             multiple
-            accept=".pdf,image/png,image/jpeg,image/webp"
+            accept={[".pdf", "image/png", "image/jpeg", "image/webp", ...SPREADSHEET_EXTENSIONS].join(",")}
             className="hidden"
             onChange={(e) => {
               if (e.target.files) addFiles(e.target.files);
@@ -280,7 +290,7 @@ export default function FundamentalAnalysis() {
           {loading ? "Analysing…" : "Analyse"}
         </button>
         <p className="text-xs text-stone-400 dark:text-stone-500">
-          Selected pages are sent to OpenAI for extraction. Files are not stored.
+          Selected pages and sheets are sent to OpenAI for extraction. Files are not stored.
         </p>
       </div>
 
@@ -396,6 +406,7 @@ function UploadRow({
   else if (status === "error") detail = upload.error ?? "Error";
   else if (kind === "image") detail = `Image, ${(file.size / 1024).toFixed(0)} KB`;
   else if (parsed?.isScanned) detail = `Scanned PDF, ${parsed.totalPages} pages, sent as file`;
+  else if (kind === "sheet" && parsed) detail = `${parsed.totalPages} sheets, ${selected.length} selected`;
   else if (parsed) detail = `${parsed.totalPages} pages, ${selected.length} selected`;
 
   return (
@@ -415,6 +426,38 @@ function UploadRow({
           ×
         </button>
       </div>
+
+      {kind === "sheet" && status === "ready" && parsed && (
+        <div className="mt-2">
+          <p className="text-xs text-stone-500 dark:text-stone-400 mb-1">
+            Statement sheets (auto-detected, edit if needed)
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            {parsed.pages.map((p) => (
+              <label key={p.page} className="flex items-center gap-1.5 text-sm text-stone-700 dark:text-stone-200">
+                <input
+                  type="checkbox"
+                  checked={selected.includes(p.page)}
+                  onChange={(e) =>
+                    onChange({
+                      selected: e.target.checked
+                        ? [...selected, p.page].sort((a, b) => a - b)
+                        : selected.filter((n) => n !== p.page),
+                    })
+                  }
+                  className="accent-teal-600"
+                />
+                {p.label}
+              </label>
+            ))}
+          </div>
+          {selected.length === 0 && (
+            <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+              No statement sheets detected. Tick the sheets to send.
+            </p>
+          )}
+        </div>
+      )}
 
       {kind === "pdf" && status === "ready" && parsed && !parsed.isScanned && (
         <div className="mt-2">
