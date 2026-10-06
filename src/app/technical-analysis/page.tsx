@@ -4,7 +4,8 @@ import TechnicalAnalysis from "@/components/custom/technical-analysis";
 export const metadata = {
   title: "Technical Analysis | Finance Buddy",
   description:
-    "Charts with moving averages, Bollinger Bands, MACD, RSI and volume profile for NGX and US stocks.",
+    "Free stock charts with moving averages, Bollinger Bands, MACD, RSI and volume profile for NGX and US stocks.",
+  keywords: ["stocks", "stock charts", "technical analysis", "NGX stocks", "US stocks", "RSI", "MACD"],
 };
 
 export default function TechnicalAnalysisPage() {

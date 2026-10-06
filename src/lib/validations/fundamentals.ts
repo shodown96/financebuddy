@@ -11,6 +11,10 @@ const figure = z
 export const PeriodSchema = z.object({
   label: z.string().describe('Column heading as printed, e.g. "FY2025", "Q2 2025", "Year ended 31 Dec 2024"'),
   endDate: z.string().nullable().describe("Period end date as YYYY-MM-DD if determinable"),
+  months: z
+    .number()
+    .nullable()
+    .describe("Length of the period in months: 3 for a quarter, 6 for a half year, 9, or 12 for a full year. Null if unclear."),
   revenue: figure,
   costOfRevenue: figure,
   grossProfit: figure,
@@ -40,7 +44,9 @@ export const ExtractedStatementSchema = z.object({
   ticker: z.string().nullable(),
   currency: z.string().nullable().describe("ISO code if possible, e.g. NGN, USD, GBP"),
   units: z.enum(UNIT_SCALES).describe("Scale of monetary figures, e.g. \"N'000\" means thousands"),
-  shareUnits: z.enum(UNIT_SCALES).describe("Scale of share counts, often different from monetary units"),
+  shareUnits: z
+    .enum(UNIT_SCALES)
+    .describe("Scale of share counts as stated next to the share figures (e.g. \"shares in thousands\"). Often different from monetary units"),
   periods: z.array(PeriodSchema).describe("One entry per period column, most recent first"),
   notes: z.array(z.string()).describe("Caveats: restatements, unusual items, ambiguous figures, missing statements"),
 });

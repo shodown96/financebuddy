@@ -528,7 +528,9 @@ function ResultView({ entry }: { entry: HistoryEntry }) {
   const fmt = makeFormatters(extracted.currency);
   const latest = analysis.periods[0];
 
-  const debtRow = comparison?.rows.find((r) => r.key === "totalDebt");
+  // The headline card is about the latest period, whatever the table shows
+  const latestComparison = analysis.comparisons.find((c) => c.currentLabel === latest?.label);
+  const debtRow = latestComparison?.rows.find((r) => r.key === "totalDebt");
 
   return (
     <div className="mt-5 space-y-5">
@@ -579,7 +581,7 @@ function ResultView({ entry }: { entry: HistoryEntry }) {
             value={fmt(latest.metrics.totalDebt, "money")}
             sub={
               debtRow && debtRow.direction !== "n/a"
-                ? `${formatChange(debtRow)} vs ${comparison.priorLabel} (${debtRow.direction === "improving" ? "reducing" : debtRow.direction === "worsening" ? "rising" : "flat"})`
+                ? `${formatChange(debtRow)} vs ${latestComparison!.priorLabel} (${debtRow.direction === "improving" ? "reducing" : debtRow.direction === "worsening" ? "rising" : "flat"})`
                 : "No prior period to compare"
             }
           />
@@ -600,6 +602,7 @@ function ResultView({ entry }: { entry: HistoryEntry }) {
                 {analysis.comparisons.map((c, i) => (
                   <option key={i} value={i}>
                     {c.currentLabel} vs {c.priorLabel}
+                    {c.basis === "year-on-year" ? " (same period last year)" : c.basis === "sequential" ? " (previous period)" : ""}
                   </option>
                 ))}
               </select>
@@ -629,7 +632,7 @@ function ResultView({ entry }: { entry: HistoryEntry }) {
                       <td className="py-2 px-3 text-right tabular-nums text-stone-500 dark:text-stone-400">{fmt(r.prior, r.kind)}</td>
                       <td className="py-2 px-3 text-right tabular-nums font-medium text-stone-900 dark:text-stone-50">{fmt(r.current, r.kind)}</td>
                       <td className="py-2 pl-3 text-right">
-                        <span className={`inline-block rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums ${DIRECTION_STYLE[r.direction]}`}>
+                        <span className={`inline-block whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums ${DIRECTION_STYLE[r.direction]}`}>
                           {r.direction === "improving" ? "▲ " : r.direction === "worsening" ? "▼ " : ""}
                           {formatChange(r)}
                         </span>

@@ -89,7 +89,7 @@ export default async function OGImage() {
 
           {/* Tool type pills */}
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            {["Tax", "Savings", "Budget", "Dictionary"].map((label) => (
+            {["Tax", "Savings", "Budget", "Stocks", "Dictionary"].map((label) => (
               <div
                 key={label}
                 style={{
@@ -141,6 +141,7 @@ export default async function OGImage() {
               "Compound Interest",
               "Savings Estimator",
               "Budget Calculator",
+              "Stock Analysis",
               "Financial Dictionary",
             ].map((title) => (
               <div

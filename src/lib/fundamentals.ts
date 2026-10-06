@@ -50,6 +50,7 @@ export interface EpsCheck {
 export interface DerivedPeriod {
   label: string;
   endDate: string | null;
+  months: number | null;
   eps: EpsCheck;
   metrics: {
     revenue: number | null;
@@ -83,9 +84,13 @@ export interface ComparisonRow {
   direction: Direction;
 }
 
+export type ComparisonBasis = "year-on-year" | "sequential";
+
 export interface Comparison {
   currentLabel: string;
   priorLabel: string;
+  // Missing on analyses saved by earlier versions
+  basis?: ComparisonBasis;
   rows: ComparisonRow[];
 }
 
@@ -146,6 +151,7 @@ export function derivePeriod(p: ExtractedPeriod, moneyScale: number, shareScale:
   return {
     label: p.label,
     endDate: p.endDate,
+    months: p.months ?? null,
     eps,
     metrics: {
       revenue,
@@ -190,27 +196,81 @@ export function compareMetric(def: MetricDef, current: number | null, prior: num
   return { key: def.key, label: def.label, kind: def.kind, current, prior, change, direction };
 }
 
-export function comparePeriods(current: DerivedPeriod, prior: DerivedPeriod): Comparison {
+export function comparePeriods(current: DerivedPeriod, prior: DerivedPeriod, basis?: ComparisonBasis): Comparison {
   return {
     currentLabel: current.label,
     priorLabel: prior.label,
+    basis,
     rows: METRICS.map((def) => compareMetric(def, current.metrics[def.key], prior.metrics[def.key])),
   };
 }
 
+const toTime = (date: string | null) => {
+  const t = date ? Date.parse(date) : NaN;
+  return Number.isFinite(t) ? t : null;
+};
+
+const DAY = 24 * 60 * 60 * 1000;
+
+// The model sometimes misreads the share count scale (e.g. "shares in
+// thousands" read as units), which throws calculated EPS off by exactly a
+// power of 1000. When a reported EPS shows this, correct the share scale.
+function shareScaleCorrection(data: ExtractedStatement, moneyScale: number, shareScale: number): number {
+  for (const p of data.periods) {
+    const { calculated, reported } = computeEps(p, moneyScale, shareScale);
+    if (!isNum(calculated) || !isNum(reported) || reported === 0) continue;
+    const ratio = calculated / reported;
+    for (const factor of [1e3, 1e6, 1e9, 1e-3, 1e-6, 1e-9]) {
+      if (Math.abs(ratio / factor - 1) < 0.05) return factor;
+    }
+    return 1;
+  }
+  return 1;
+}
+
+const sameLength = (a: DerivedPeriod, b: DerivedPeriod) => a.months === b.months;
+
+// Prefer the same period a year earlier (Q2 2026 vs Q2 2025). Otherwise fall
+// back to the previous period of the same length (Q2 2026 vs Q1 2026).
+function findPrior(current: DerivedPeriod, older: DerivedPeriod[]): { prior: DerivedPeriod; basis: ComparisonBasis } | null {
+  const end = toTime(current.endDate);
+  if (end === null) return null;
+
+  const candidates = older.filter((p) => sameLength(p, current) && toTime(p.endDate) !== null);
+  const yearAgo = candidates.find((p) => Math.abs(end - 365 * DAY - toTime(p.endDate)!) <= 20 * DAY);
+  if (yearAgo) return { prior: yearAgo, basis: "year-on-year" };
+
+  const previous = candidates.find((p) => toTime(p.endDate)! < end);
+  return previous ? { prior: previous, basis: "sequential" } : null;
+}
+
 export function analyze(data: ExtractedStatement): FundamentalAnalysis {
   const moneyScale = SCALE[data.units] ?? 1;
-  const shareScale = SCALE[data.shareUnits] ?? 1;
+  const shareScale = (SCALE[data.shareUnits] ?? 1) * shareScaleCorrection(data, moneyScale, SCALE[data.shareUnits] ?? 1);
 
-  // Most recent first. Fall back to document order when dates are missing.
-  const sorted = [...data.periods].sort((a, b) =>
-    a.endDate && b.endDate ? b.endDate.localeCompare(a.endDate) : 0,
-  );
+  // Most recent first. Undated periods go last, in document order.
+  const sorted = data.periods
+    .map((p, i) => ({ p, i, t: toTime(p.endDate) }))
+    .sort((a, b) => {
+      if (a.t !== null && b.t !== null) return b.t - a.t || a.i - b.i;
+      if (a.t !== null) return -1;
+      if (b.t !== null) return 1;
+      return a.i - b.i;
+    })
+    .map(({ p }) => p);
   const periods = sorted.map((p) => derivePeriod(p, moneyScale, shareScale));
 
   const comparisons: Comparison[] = [];
-  for (let i = 0; i < periods.length - 1; i++) {
-    comparisons.push(comparePeriods(periods[i], periods[i + 1]));
+  periods.forEach((current, i) => {
+    const match = findPrior(current, periods.slice(i + 1));
+    if (match) comparisons.push(comparePeriods(current, match.prior, match.basis));
+  });
+
+  // No usable dates, so trust document order
+  if (comparisons.length === 0) {
+    for (let i = 0; i < periods.length - 1; i++) {
+      comparisons.push(comparePeriods(periods[i], periods[i + 1]));
+    }
   }
 
   return { periods, comparisons };

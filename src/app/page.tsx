@@ -5,15 +5,15 @@ import type { Metadata } from "next";
 import { APP_DESCRIPTION } from "@/lib/constants/app";
 
 export const metadata: Metadata = {
-  title: "Finance Buddy, Free Tax, Savings & Budget Calculators",
+  title: "Finance Buddy, Free Tax, Savings, Budget & Stock Tools",
   description: APP_DESCRIPTION,
   openGraph: {
-    title: "Finance Buddy, Free Tax, Savings & Budget Calculators",
+    title: "Finance Buddy, Free Tax, Savings, Budget & Stock Tools",
     description: APP_DESCRIPTION,
     url: "/",
   },
   twitter: {
-    title: "Finance Buddy, Free Tax, Savings & Budget Calculators",
+    title: "Finance Buddy, Free Tax, Savings, Budget & Stock Tools",
     description: APP_DESCRIPTION,
   },
 };
