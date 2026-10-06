@@ -42,6 +42,12 @@ const BUDGET_ICON = (
   </svg>
 );
 
+const STOCKS_ICON = (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+  </svg>
+);
+
 const DICT_ICON = (
   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -60,7 +66,7 @@ export default function HomePage() {
           </h1>
           <p className="mt-3 text-base text-stone-500 dark:text-stone-400 max-w-xl">
             Free, browser-based calculators for tax, savings growth, and budgeting.
-            All calculations happen locally. Nothing is sent anywhere.
+            Calculators run locally. Stock analysis sends the pages you choose to an AI model for extraction.
           </p>
         </div>
 
@@ -141,6 +147,27 @@ export default function HomePage() {
               title="Budget Calculator"
               description="Allocate your income across spending categories and track what is left."
               icon={BUDGET_ICON}
+            />
+          </div>
+        </section>
+
+        {/* Stocks */}
+        <section className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3">
+            Stock Analysis
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <CardLink
+              href={PATHS.FUNDAMENTAL_ANALYSIS}
+              title="Fundamental Analysis"
+              description="Upload financial statements to compare revenue, profit, EPS and debt against the prior period."
+              icon={STOCKS_ICON}
+            />
+            <CardLink
+              href={PATHS.TECHNICAL_ANALYSIS}
+              title="Technical Analysis"
+              description="Charts with moving averages, MACD, RSI, Bollinger Bands and volume profile for NGX and US stocks."
+              icon={STOCKS_ICON}
             />
           </div>
         </section>

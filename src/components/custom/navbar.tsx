@@ -29,6 +29,13 @@ const NAV_GROUPS = [
     links: [{ href: PATHS.BUDGET_CALCULATOR, label: "Budget Calculator" }],
   },
   {
+    label: "Stocks",
+    links: [
+      { href: PATHS.FUNDAMENTAL_ANALYSIS, label: "Fundamentals" },
+      { href: PATHS.TECHNICAL_ANALYSIS, label: "Technicals" },
+    ],
+  },
+  {
     label: "Dictionary",
     links: [{ href: PATHS.DICTIONARY, label: "Financial Dictionary" }],
   },

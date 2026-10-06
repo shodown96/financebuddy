@@ -10,17 +10,21 @@
     "run": "npx tsx"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.84",
     "@anthropic-ai/sdk": "^0.80.0",
     "@tavily/core": "^0.7.2",
+    "ai": "^7.0.128",
     "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lightweight-charts": "^5.2.1",
     "lucide-react": "^0.563.0",
     "next": "16.1.1",
     "nodemailer": "^7.0.12",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0",
+    "unpdf": "^1.8.1",
     "zod": "^4.3.5",
     "zod-formik-adapter": "^2.0.0"
   },
